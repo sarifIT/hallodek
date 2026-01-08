@@ -1,0 +1,168 @@
+{
+  "name": "workflow.json",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -320,
+        -144
+      ],
+      "id": "075191df-402d-4a0d-ae34-9856ec1dbcf6",
+      "name": "When chat message received",
+      "webhookId": "92bd609d-cddc-4545-9afa-9cf6797b62d8"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -48,
+        -144
+      ],
+      "id": "a82ea1b7-4b09-4572-8b80-c6f41c9e2d2c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -272,
+        224
+      ],
+      "id": "183bf88e-7f84-46e4-b218-6171da24b3af",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "vQjG9kUJeJoPC0V2",
+          "name": "Trex AI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 30
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        32,
+        176
+      ],
+      "id": "0f4457f4-0515-4cb4-b269-c23c5985106e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1BtQd0uhWVaMloDco0x5hr-fFPIverZwiwQ9Fmee9LU4",
+          "mode": "list",
+          "cachedResultName": "kas KWU 2024/2025",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BtQd0uhWVaMloDco0x5hr-fFPIverZwiwQ9Fmee9LU4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1736409039,
+          "mode": "list",
+          "cachedResultName": "out/income",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BtQd0uhWVaMloDco0x5hr-fFPIverZwiwQ9Fmee9LU4/edit#gid=1736409039"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        176,
+        352
+      ],
+      "id": "ff0b0ce0-ed92-42eb-98fe-fb52577cd938",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "dcpzb9XD0ClAbhRN",
+          "name": "MechaDrive Bot"
+        }
+      },
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "executionTimeout": -1
+  },
+  "versionId": "f7cd7716-a25a-453b-8bf6-4d43b7ef1546",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d27c23b2918b1655298e933933b62db513579ba86a5ac8592177f2d89182a3fc"
+  },
+  "id": "SuIQRqsbP3NxgP4i",
+  "tags": []
+}
