@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Koperasi Digital</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Sistem Kas Koperasi</h1>
+
+        <section class="form-section">
+            <h2>Pendaftaran Anggota Baru</h2>
+            <form id="formDaftar">
+                <input type="text" id="namaDaftar" placeholder="Nama Lengkap" required>
+                <input type="email" id="emailDaftar" placeholder="Alamat Email" required>
+                <button type="submit">Daftar Sekarang</button>
+            </form>
+        </section>
+
+        <hr>
+
+        <section class="form-section">
+            <h2>Input Pembayaran Kas</h2>
+            <p>Nominal: <strong>Rp 10.000</strong></p>
+            <form id="formBayar">
+                <input type="text" id="namaBayar" placeholder="Nama Anggota" required>
+                <input type="email" id="emailBayar" placeholder="Email Terdaftar" required>
+                <input type="number" id="nominal" value="10000" readonly placeholder="nominal">
+                <button type="submit" class="btn-pay">Kirim Bukti Bayar</button>
+            </form>
+        </section>
+        
+        <div id="statusMessage"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

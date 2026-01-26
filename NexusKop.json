@@ -1,0 +1,528 @@
+{
+  "name": "NexusKop",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "Daftar_Anggota",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        -80
+      ],
+      "id": "c68dc845-cc90-4a35-ac3e-05916f3fef40",
+      "name": "daftar member",
+      "webhookId": "22bef549-7feb-4bbe-8ff9-e4dbf1f81f97"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('daftar member').item.json.body.email }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        160,
+        -80
+      ],
+      "id": "f1126b25-2870-44ed-9eaf-877aa3d75590",
+      "name": "Send a message",
+      "webhookId": "521c615b-dce0-4e0e-b405-ee71c08cfc02",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NNpBXQuhlbpQFwRA",
+          "name": "NexusKop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1lmvM8c24ovcOPbApnOl66GByYhBqIALOuZRz3gRPVR0/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Daftar_Anggota",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmvM8c24ovcOPbApnOl66GByYhBqIALOuZRz3gRPVR0/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Tanggal_Daftar": "={{ $now }}",
+            "Email": "={{ $json.body.email }}",
+            "Nama": "={{ $json.body.nama }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Nama",
+              "displayName": "Nama",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tanggal_Daftar",
+              "displayName": "Tanggal_Daftar",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        -80
+      ],
+      "id": "45ef1ea1-8f3f-4043-9767-d3421deaf341",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZxOITiabvQu295bX",
+          "name": "NexusKop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Daftar variasi Subjek Email\nconst subjects = [\n  `Halo ${$json.Nama}, ada pesan hangat dari KoperAI ☕`,\n  `Cek yuk! Pengingat Kas Mingguan untuk ${$json.Nama}`,\n  `Semangat Senin! Titip iuran kasnya ya, ${$json.Nama}`,\n  `Update Koperasi: Investasi kecil kita hari ini, ${$json.Nama}`\n];\n\n// Daftar variasi Kalimat Pembuka\nconst openings = [\n  \"Semoga harimu menyenangkan!\",\n  \"Apa kabar hari ini? Semoga sehat selalu.\",\n  \"Sambil santai sejenak, ada info sedikit nih.\",\n  \"Tetap semangat menjalankan aktivitas ya!\"\n];\n\n// Daftar Kutipan/Quotes Motivasi\nconst quotes = [\n  \"Sedikit demi sedikit, lama-lama menjadi bukit.\",\n  \"Kebersamaan adalah awal dari kesuksesan.\",\n  \"Gotong royong membuat beban terasa ringan.\",\n  \"Menabung hari ini, tersenyum di masa depan.\"\n];\n\n// Logika Pengacak (Randomizer)\nconst randomSubject = subjects[Math.floor(Math.random() * subjects.length)];\nconst randomOpening = openings[Math.floor(Math.random() * openings.length)];\nconst randomQuote = quotes[Math.floor(Math.random() * quotes.length)];\n\n// Menyusun Pesan Lengkap\nconst messageBody = `\n  Halo <b>${$json.Nama}</b>,<br><br>\n  ${randomOpening}<br><br>\n  Hanya ingin mengingatkan untuk iuran kas koperasi minggu ini sebesar <b>Rp 10.000</b>. \n  Pembayaran bisa dilakukan melalui bendahara atau transfer seperti biasa.<br><br>\n  <i>\"${randomQuote}\"</i><br><br>\n  Salam hangat,<br>\n  <b>Admin KoperAI</b>\n`;\n\n// Output data ke node selanjutnya (Gmail)\nreturn {\n  subject: randomSubject,\n  message: messageBody\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        -80
+      ],
+      "id": "a5c71d41-27cf-433d-808b-b34adf63b05b",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bayar-kas",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -384,
+        96
+      ],
+      "id": "30940b3a-cf6a-4647-b80f-871680045e70",
+      "name": "bayar_kas",
+      "webhookId": "e68d52d9-039c-4f3b-b547-5c81c5710333"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "10249465-664d-412f-b476-ee7fdf555b21",
+              "leftValue": "={{ $json.body.nominal }}",
+              "rightValue": "=10000",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -176,
+        96
+      ],
+      "id": "29133beb-d744-4a7b-a54a-5c8e51d2755c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Ambil data dari node sebelumnya (Webhook/Validator)\nconst nama = $json.nama_bayar;\nconst email = $json.email_bayar;\nconst nominal = $json.nominal;\nconst tanggal = new Date().toLocaleDateString('id-ID', { \n    weekday: 'long', \n    year: 'numeric', \n    month: 'long', \n    day: 'numeric' \n});\n\n// 2. Buat ID Transaksi acak untuk kesan profesional\nconst transactionId = \"KPR-\" + Math.floor(Math.random() * 1000000);\n\n// 3. Daftar variasi pesan terima kasih agar tidak kaku\nconst pesanKeren = [\n    \"Kontribusi Anda hari ini adalah langkah besar untuk kesejahteraan kita bersama.\",\n    \"Terima kasih telah menjadi anggota yang disiplin dan menginspirasi.\",\n    \"Investasi kecil Anda hari ini akan membuahkan hasil besar di masa depan.\",\n    \"Semangat gotong royong Anda sungguh luar biasa!\"\n];\nconst randomPesan = pesanKeren[Math.floor(Math.random() * pesanKeren.length)];\n\n// 4. Susun Subjek Email\nconst subjectEmail = `Bukti Pembayaran Kas Lunas - ${nama} (${transactionId})`;\n\n// 5. Susun Isi Email (HTML)\nconst htmlBody = `\n<div style=\"font-family: Arial, sans-serif; border: 1px solid #ddd; padding: 20px; border-radius: 10px; max-width: 500px;\">\n    <h2 style=\"color: #27ae60; text-align: center;\">KWITANSI DIGITAL</h2>\n    <hr>\n    <p>Halo <b>${nama}</b>,</p>\n    <p>Pembayaran kas mingguan Anda telah kami terima dan tercatat di sistem <b>KoperAI</b>.</p>\n    \n    <table style=\"width: 100%; background: #f9f9f9; padding: 10px; border-radius: 5px;\">\n        <tr><td>ID Transaksi</td><td>: <b>${transactionId}</b></td></tr>\n        <tr><td>Tanggal</td><td>: ${tanggal}</td></tr>\n        <tr><td>Nominal</td><td>: <b>Rp ${parseInt(nominal).toLocaleString('id-ID')}</b></td></tr>\n        <tr><td>Status</td><td>: <span style=\"color: green; font-weight: bold;\">LUNAS</span></td></tr>\n    </table>\n\n    <p style=\"font-style: italic; color: #555; margin-top: 20px;\">\n        \"${randomPesan}\"\n    </p>\n    \n    <hr>\n    <p style=\"font-size: 12px; color: #888; text-align: center;\">\n        Email ini dihasilkan otomatis oleh sistem KoperAI.<br>\n        Simpan email ini sebagai bukti pembayaran yang sah.\n    </p>\n</div>\n`;\n\n// 6. Output untuk dikirim ke Node Gmail\nreturn {\n    to_email: email,\n    subject: subjectEmail,\n    message_html: htmlBody,\n    transaction_id: transactionId\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        80
+      ],
+      "id": "df6cef34-5348-44cd-9b61-98d05fc51d15",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('bayar_kas').item.json.body.email_bayar }}",
+        "subject": "={{ $json.subject }}{{ $json.transaction_id }}",
+        "message": "={{ $json.message_html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        80
+      ],
+      "id": "8102bb24-6850-4f2f-8f58-482060f8661d",
+      "name": "Send a message1",
+      "webhookId": "521c615b-dce0-4e0e-b405-ee71c08cfc02",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NNpBXQuhlbpQFwRA",
+          "name": "NexusKop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('bayar_kas').item.json.body.email_bayar }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        304,
+        224
+      ],
+      "id": "67eaa64b-bc4e-44f8-9adb-c26fdb4eb919",
+      "name": "Send a message2",
+      "webhookId": "55973741-8605-4405-a069-c6136d72ea10",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NNpBXQuhlbpQFwRA",
+          "name": "NexusKop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const nama = $json.nama_bayar;\nconst email = $json.email_bayar;\nconst nominalInput = $json.nominal;\n\nreturn {\n  subject: \"⚠️ Masalah Pembayaran Kas - KoperAI\",\n  message: `\n    <div style=\"font-family: sans-serif; border: 2px solid #e74c3c; padding: 20px; border-radius: 10px;\">\n      <h3 style=\"color: #e74c3c;\">Pembayaran Tidak Sesuai</h3>\n      <p>Halo <b>${nama}</b>,</p>\n      <p>Kami mendeteksi adanya input pembayaran kas dengan nominal <b>Rp ${parseInt(nominalInput).toLocaleString('id-ID')}</b>.</p>\n      <p>Mohon maaf, sistem kami hanya dapat menerima pembayaran tepat sebesar <b>Rp 10.000</b> sesuai aturan koperasi.</p>\n      <hr>\n      <p><b>Apa yang harus dilakukan?</b><br>\n      Silakan lakukan input ulang melalui website dengan nominal yang benar agar status Anda tercatat sebagai \"Lunas\".</p>\n      <p>Jika Anda merasa ini adalah kesalahan sistem, silakan hubungi Bendahara.</p>\n    </div>\n  `\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        128,
+        224
+      ],
+      "id": "b7e2108f-8ed0-48cb-b644-2631edc89652",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                0,
+                1
+              ],
+              "triggerAtHour": 8
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -96,
+        352
+      ],
+      "id": "60609653-5c98-42bf-88f5-49df9f65644a",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1lmvM8c24ovcOPbApnOl66GByYhBqIALOuZRz3gRPVR0/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Daftar_Anggota",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1lmvM8c24ovcOPbApnOl66GByYhBqIALOuZRz3gRPVR0/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        112,
+        352
+      ],
+      "id": "19454e63-a01c-4c8f-b3e0-a2cc2377ffaa",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "ZxOITiabvQu295bX",
+          "name": "NexusKop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\"Buatlah pengingat bayar kas Rp 10.000 untuk {{ $json.Nama }}. Temanya adalah semangat gotong royong di hari Senin. Gunakan bahasa yang santai tapi sopan.\"",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        320,
+        352
+      ],
+      "id": "d767cb81-674a-4d0b-ba45-bdd650559834",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "mistralai/devstral-2512:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        320,
+        560
+      ],
+      "id": "b95e12d0-a314-4378-88f7-47e5d3484f9d",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "ZTHxB5p1OeckFa0K",
+          "name": "NexusKop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.message }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        352
+      ],
+      "id": "e159f6c7-e03f-4bde-8f10-6032d2d87e17",
+      "name": "Send a message3",
+      "webhookId": "23230fc0-3ccd-4de9-afc6-f613240f1b81",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "NNpBXQuhlbpQFwRA",
+          "name": "NexusKop"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "Sticky Note 1: [SISTEM 1] Pendaftaran Anggota\nJUDUL: REGISTRASI REAL-TIME\n\nAlur: Menerima data dari Website via Webhook.\n\nWebhook: Endpoint untuk formDaftar.\n\nGoogle Sheets: Menyimpan Nama, Email, & Tanggal Daftar (Tab: Daftar_Anggota).\n\nGmail: Mengirim \"Welcome Email\" & Instruksi Kas.\n\nNote: Pastikan kolom 'Email' di Sheets diformat sebagai teks.\n\nSticky Note 2: [SISTEM 2] Input Pembayaran Kas\nJUDUL: VALIDASI & KWITANSI PEMBAYARAN\n\nAlur: Validasi nominal pembayaran Rp 10.000.\n\nIF Node: Cek apakah $json.nominal == 10000.\n\nTRUE: Simpan ke tab Data_Kas & Kirim Kwitansi HTML via Gmail.\n\nFALSE: Kirim Email Peringatan \"Nominal Salah\" & Respond Webhook 400.\n\nNote: Jangan lupa aktifkan 'Respond to Webhook Node' di setting Webhook utama.\n\nSticky Note 3: [SISTEM 3] Pengingat AI (Otomatis)\nJUDUL: SMART REMINDER (SETIAP SENIN)\n\nAlur: Penagihan otomatis berbasis AI/Code Generator.\n\nSchedule: Jalan otomatis setiap Senin pukul 08:00 WIB.\n\nGSheets (Get Rows): Mengambil daftar anggota yang belum bayar.\n\nCode Node: Generate pesan unik (Kutipan/Pantun) agar tidak dianggap spam.\n\nGmail: Kirim email tagihan secara masal (Looping).\n\nNote: Gunakan {{ $json.Email }} di kolom 'To' pada Gmail.",
+        "height": 864,
+        "width": 496
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -944,
+        -144
+      ],
+      "typeVersion": 1,
+      "id": "c2c3b0e9-b1c3-4dd5-8b4a-d443968f225b",
+      "name": "Sticky Note"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "daftar member": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "bayar_kas": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "Send a message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "76637476-92da-4daf-bb11-28f5a1a64afc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d27c23b2918b1655298e933933b62db513579ba86a5ac8592177f2d89182a3fc"
+  },
+  "id": "MoJbtHXonuUoHqm1",
+  "tags": []
+}
